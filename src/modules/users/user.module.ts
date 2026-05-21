@@ -16,7 +16,9 @@ import { DeleteUserUseCase } from "./use-cases/delete.usecase";
         FindUserByIdUseCase,
         UpdateUserUseCase,
         DeleteUserUseCase,
-        UserRepository],
-    controllers: [UserController]
+        UserRepository
+    ],
+    controllers: [UserController],
+    exports: [UserRepository]
 })
-export class UserModule {}
+export class UserModule { }

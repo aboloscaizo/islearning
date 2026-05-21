@@ -1,3 +1,4 @@
+import { Role, Status } from "@prisma/client";
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
 import { ValidationMessages } from "src/common/constants/validation.messages";
 export class UpdateUserDto {
@@ -13,10 +14,10 @@ export class UpdateUserDto {
     passwordHash?: string;
 
     @IsOptional()
-    @IsEnum(["USER", "ADMIN"], {message: ValidationMessages.ROLE.INVALID})
+    @IsEnum(Role, { message: ValidationMessages.ROLE.INVALID })
     role?: string;
 
     @IsOptional()
-    @IsEnum(["ACTIVE", "BANNED"], {message: ValidationMessages.STATUS.INVALID})
+    @IsEnum(Status, { message: ValidationMessages.STATUS.INVALID })
     status?: string;
 }

@@ -1,5 +1,4 @@
-import { Role, Status } from "src/generated/prisma";
-
+import { Role, Status } from "@prisma/client";
 export type UpdateUserRepositoryInput = {
     id: number;
     email?: string;
