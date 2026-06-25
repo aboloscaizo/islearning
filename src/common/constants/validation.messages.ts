@@ -16,6 +16,10 @@ export const ValidationMessages = {
     STATUS: {
         REQUIRED: "Trạng thái không được để trống",
         INVALID: "Trạng thái không hợp lệ",
-    }
+    },
+    REFRESH_TOKEN: {
+        REQUIRED: 'Refresh token không được để trống',
+        MUST_BE_STRING: 'Refresh token phải là chuỗi ký tự',
+    },
     
-}as const;
+} as const;
