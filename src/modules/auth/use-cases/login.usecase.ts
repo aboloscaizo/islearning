@@ -3,7 +3,7 @@ import { UserRepository } from "src/modules/users/repositories/user.repository";
 import { LoginDto } from "../dto/login.dto";
 import { AppException } from "src/common/exceptions/app.exception";
 import { AuthError } from "../constants/auth.errors";
-import { PasswordHasherStrategy } from "../strategies/hashing/password.hasher.strategy";
+import { PasswordHasherStrategy } from "../../../common/secret/hashing/password.hasher.strategy";
 import { AuthTokenFactory } from "../factories/auth-token.factory";
 import { SessionRepository } from "src/modules/sessions/repositories/session.repository";
 import { SessionStatus } from "@prisma/client";

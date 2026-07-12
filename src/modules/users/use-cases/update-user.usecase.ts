@@ -6,11 +6,13 @@ import { Role, Status } from "@prisma/client";
 import { AppException } from "src/common/exceptions/app.exception";
 import { AuthError } from "src/modules/auth/constants/auth.errors";
 import { UserError } from "../constants/user.error";
+import { PasswordHasherStrategy } from "src/common/secret/hashing/password.hasher.strategy";
 
 @Injectable()
 export class UpdateUserUseCase {
     constructor(
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly passwordHasherStrategy: PasswordHasherStrategy
     ) {}
     async execute(
         currentUser: {
@@ -22,30 +24,41 @@ export class UpdateUserUseCase {
         targetUserId: number, data: UpdateUserDto) {
         const isAdmin = currentUser.role === Role.ADMIN;
         const isOwner = currentUser.id === targetUserId;
-        if (!isAdmin && !isOwner) {
-            throw new AppException(AuthError.FORBIDDEN);
+        if (!isAdmin && !isOwner)
+            throw new AppException(AuthError.CANNOT_UPDATE_OTHER_USER);
+        if (!isAdmin) {
+            if (data.role !== undefined)
+                throw new AppException(AuthError.CANNOT_CHANGE_ROLE);
+            if (data.status !== undefined)
+                throw new AppException(AuthError.CANNOT_CHANGE_STATUS);
         }
 
-        const updateData: any = {};
-        if (data.email !== undefined) {
+        if (isAdmin && isOwner) {
+            if (data.role !== undefined)
+                throw new AppException(AuthError.CANNOT_CHANGE_OWN_ROLE);
+            if (data.status !== undefined)
+                throw new AppException(AuthError.CANNOT_CHANGE_OWN_STATUS);
+        }
+
+        const updateData: Partial<{
+            email: string;
+            passwordHash: string;
+            role: Role;
+            status: Status;
+        }> = {};
+        if (data.email !== undefined)
             updateData.email = data.email;
-        }
-        if (data.passwordHash !== undefined) {
-            updateData.passwordHash = data.passwordHash;
-        }
+        if (data.password !== undefined)
+            updateData.passwordHash = await this.passwordHasherStrategy.hash(data.password);
+        if (data.role !== undefined)
+            updateData.role = data.role;
+        if (data.status !== undefined)
+            updateData.status = data.status;
 
-        if (isAdmin) {
-            if (data.role !== undefined) {
-                updateData.role = data.role;
-            }
-            if (data.status !== undefined) {
-                updateData.status = data.status;
-            }
-        }
         const user = await this.userRepository.updateUser(targetUserId, updateData);
-        if (!user) {
+        if (!user)
             throw new AppException(UserError.USER_NOT_FOUND);
-        }
         return UserMapper.toResponse(user);
     }
+
 }

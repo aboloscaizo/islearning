@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { SessionRepository } from "src/modules/sessions/repositories/session.repository";
 import { UserRepository } from "src/modules/users/repositories/user.repository";
-import { PasswordHasherStrategy } from "../strategies/hashing/password.hasher.strategy";
+import { PasswordHasherStrategy } from "../../../common/secret/hashing/password.hasher.strategy";
 import { AppException } from "src/common/exceptions/app.exception";
 import { AuthError } from "../constants/auth.errors";
 import { SessionStatus } from "@prisma/client";

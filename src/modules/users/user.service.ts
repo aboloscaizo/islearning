@@ -30,7 +30,7 @@ export class UserService {
        role: data.role,
        status: data.status
       }
-      if(data.passwordHash) updateDate.passwordHash = data.passwordHash;
+      if (data.password) updateDate.password = data.password;
       const user = await this.userRepository.updateUser(id, updateDate);
       return UserMapper.toResponse(user);
     }

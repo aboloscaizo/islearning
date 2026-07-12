@@ -11,13 +11,13 @@ export class UpdateUserDto {
     @IsNotEmpty({message: ValidationMessages.PASSWORD.REQUIRED})
     @IsString({message: ValidationMessages.PASSWORD.MUST_BE_STRING})
     @MinLength(3, {message: ValidationMessages.PASSWORD.MIN_LENGTH})
-    passwordHash?: string;
+    password?: string;
 
     @IsOptional()
     @IsEnum(Role, { message: ValidationMessages.ROLE.INVALID })
-    role?: string;
+    role?: Role;
 
     @IsOptional()
     @IsEnum(Status, { message: ValidationMessages.STATUS.INVALID })
-    status?: string;
+    status?: Status;
 }

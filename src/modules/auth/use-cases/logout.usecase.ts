@@ -5,7 +5,7 @@ import { AppException } from "src/common/exceptions/app.exception";
 import { AuthError } from "../constants/auth.errors";
 import { UserRepository } from "src/modules/users/repositories/user.repository";
 import { SessionRepository } from "src/modules/sessions/repositories/session.repository";
-import { PasswordHasherStrategy } from "../strategies/hashing/password.hasher.strategy";
+import { PasswordHasherStrategy } from "../../../common/secret/hashing/password.hasher.strategy";
 import { SessionStatus } from "@prisma/client";
 
 @Injectable()
