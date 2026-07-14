@@ -7,6 +7,7 @@ import { UserRepository } from "src/modules/users/repositories/user.repository";
 import { SessionRepository } from "src/modules/sessions/repositories/session.repository";
 import { PasswordHasherStrategy } from "../../../common/secret/hashing/password.hasher.strategy";
 import { SessionStatus } from "@prisma/client";
+import { SessionStateFactory } from "src/modules/sessions/states/session-state.factory";
 
 @Injectable()
 export class LogoutUseCase {
@@ -15,6 +16,7 @@ export class LogoutUseCase {
         private readonly userRepository: UserRepository,
         private readonly sessionRepository: SessionRepository,
         private readonly passwordHashStrategy: PasswordHasherStrategy,
+        private readonly sessionStateFactory: SessionStateFactory,
     ) { }
     async executive(data: RefreshTokenDto) {
         let payload;
@@ -30,10 +32,12 @@ export class LogoutUseCase {
         if (!user) {
             throw new AppException(AuthError.USER_NOT_FOUND);
         }
-        const session = await this.sessionRepository.findActiveByUserId(user.id);
+        const session = await this.sessionRepository.findLatestByUserId(user.id);
         if(!session){
             throw new AppException(AuthError.ACTIVE_SESSION_NOT_FOUND);
         }
+        const sessionState = this.sessionStateFactory.create(session.status);
+        sessionState.ensureCanLogout();
         const isRefreshTokenCorrect = await this.passwordHashStrategy.compare(data.refreshToken, session.refreshTokenHash);
         if(!isRefreshTokenCorrect){
             throw new AppException(AuthError.REFRESH_TOKEN_INVALID);

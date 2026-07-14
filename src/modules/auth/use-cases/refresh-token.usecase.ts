@@ -8,6 +8,7 @@ import { AuthError } from "../constants/auth.errors";
 import { SessionStatus } from "@prisma/client";
 import { RefreshTokenDto } from "../dto/refresh-token.dto";
 import { AuthTokenFactory } from "../factories/auth-token.factory";
+import { SessionStateFactory } from "src/modules/sessions/states/session-state.factory";
 
 @Injectable()
 export class RefreshTokenUseCase {
@@ -17,6 +18,7 @@ export class RefreshTokenUseCase {
         private readonly sessionRepository: SessionRepository,
         private readonly passwordHashStrategy: PasswordHasherStrategy,
         private readonly authTokenFactory: AuthTokenFactory,
+        private readonly sessionStateFactory: SessionStateFactory,
     ) { }
     async executive(data: RefreshTokenDto) {
         let payload;
@@ -32,10 +34,12 @@ export class RefreshTokenUseCase {
         if (!user) {
             throw new AppException(AuthError.USER_NOT_FOUND);
         }
-        const session = await this.sessionRepository.findActiveByUserId(user.id);
+        const session = await this.sessionRepository.findLatestByUserId(user.id);
         if (!session) {
             throw new AppException(AuthError.ACTIVE_SESSION_NOT_FOUND);
         }
+        const sessionState = this.sessionStateFactory.create(session.status);
+        sessionState.ensureCanRefresh();
         const isRefreshTokenCorrect = await this.passwordHashStrategy.compare(data.refreshToken, session.refreshTokenHash);
         if (!isRefreshTokenCorrect) {
             throw new AppException(AuthError.REFRESH_TOKEN_INVALID);

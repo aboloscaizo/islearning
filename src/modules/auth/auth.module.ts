@@ -12,6 +12,7 @@ import { LogoutUseCase } from "./use-cases/logout.usecase";
 import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "./strategies/jwt/jwt.strategies";
 import { HashingModule } from "src/common/secret/hashing/hashing.module";
+import { SessionStateFactory } from "../sessions/states/session-state.factory";
 
 @Module({
     providers: [
@@ -22,7 +23,7 @@ import { HashingModule } from "src/common/secret/hashing/hashing.module";
         LogoutUseCase,
         RefreshTokenUseCase,
         JwtStrategy,
-
+        SessionStateFactory,
     ],
     controllers: [AuthController],
     imports: [UserModule,  

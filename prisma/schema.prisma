@@ -26,6 +26,7 @@ enum Status {
 enum SessionStatus {
     ACTIVE
     REVOKED
+    EXPIRED
 }
 
 model User {

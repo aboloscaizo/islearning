@@ -29,6 +29,16 @@ export class SessionRepository {
             }
         });
     }
+    async findLatestByUserId(userId: number) {
+        return await this.prismaService.session.findFirst({
+            where: {
+                userId: userId,
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        })
+    }
     async findById(id: number){
         return await this.prismaService.session.findUnique({
             where: {
